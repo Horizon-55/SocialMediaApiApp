@@ -1,0 +1,11 @@
+{
+  "name": "project-api",
+  "version": "1.0.0",
+  "description": "This is a project api with swagger exprees and JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Horizon",
+  "license": "ISC"
+}
