@@ -1,11 +1,19 @@
 {
-  "name": "project-api",
+  "name": "SocialMediaApiApp",
   "version": "1.0.0",
   "description": "This is a project api with swagger exprees and JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index",
+    "SwaggerEditor": "http-server swagger-editor -a 127.0.0.1 -p 8080",
+    "SwaggerUI": "http-server swagger-ui -a 127.0.0.1 -p 8080"
   },
   "author": "Horizon",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.4",
+    "sequelize": "^6.37.3"
+  }
 }
