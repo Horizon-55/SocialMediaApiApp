@@ -1,8 +1,7 @@
 import express from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-
-const app = express();
+export const app = express();
 
 // Настройка Swagger UI
 const options = {
@@ -14,16 +13,30 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000", // Используйте url вместо api
+        url: "http://localhost:3000",
       },
     ],
   },
-  apis: ["./routes/*.js"], // Укажите файлы с описанием API
+  apis: ["./routers/SocalMediaRoutes.js", "app.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Описание API для корневого URL
+/**
+ * @swagger
+ * /:
+ *  get:
+ *    summary: Main URL
+ *    description: This API is used to check if the GET method is working or not.
+ *    responses:
+ *      200:
+ *        description: Successful response.
+ */
+app.get("/", (req, res) => {
+  res.send("Ласкаво просимо через базу даних PostgreSQL");
+});
 
 //Прослуховування
 app.listen(3000, () => {
