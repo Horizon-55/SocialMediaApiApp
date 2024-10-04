@@ -1,6 +1,8 @@
 import express from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { CloseConnection, syndDatabase, testConnection } from "./connection.js";
+import { setupModels } from "./models/User & Task.js";
 export const app = express();
 
 // Настройка Swagger UI
@@ -40,5 +42,8 @@ app.get("/", (req, res) => {
 
 //Прослуховування
 app.listen(3000, () => {
-  console.log("Сервер запущений на порті: 3000");
+  console.log(`Сервер запущений на порті: ${3000}`);
 });
+//налаштування таблиць та сихнонізація
+setupModels();
+syndDatabase();
