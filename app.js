@@ -1,9 +1,21 @@
 import express from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { CloseConnection, syndDatabase, testConnection } from "./connection.js";
+import { CloseConnection, syndDatabase } from "./connection.js";
 import { setupModels } from "./models/User & Task.js";
-export const app = express();
+import TaskController from "./routers/TaskController.js";
+const app = express();
+
+async function startServer() {
+  //налаштування таблиць та сихнонізація
+  setupModels();
+  syndDatabase();
+
+  //Прослуховування
+  app.listen(3000, () => {
+    console.log(`Сервер запущений на порті: ${3000}`);
+  });
+}
 
 // Настройка Swagger UI
 const options = {
@@ -19,11 +31,14 @@ const options = {
       },
     ],
   },
-  apis: ["./routers/SocalMediaRoutes.js", "app.js"],
+  apis: ["./routers/TaskController.js", "app.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/tasks", TaskController);
 
 // Описание API для корневого URL
 /**
@@ -40,10 +55,5 @@ app.get("/", (req, res) => {
   res.send("Ласкаво просимо через базу даних PostgreSQL");
 });
 
-//Прослуховування
-app.listen(3000, () => {
-  console.log(`Сервер запущений на порті: ${3000}`);
-});
-//налаштування таблиць та сихнонізація
-setupModels();
-syndDatabase();
+startServer();
+export default app;
