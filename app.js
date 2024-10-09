@@ -4,6 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import { CloseConnection, syndDatabase } from "./connection.js";
 import { setupModels } from "./models/User & Task.js";
 import TaskController from "./routers/TaskController.js";
+import UserController from "./routers/UserController.js";
 const app = express();
 
 async function startServer() {
@@ -31,7 +32,11 @@ const options = {
       },
     ],
   },
-  apis: ["./routers/TaskController.js", "app.js"],
+  apis: [
+    "./routers/TaskController.js",
+    "./routers/UserController.js",
+    "app.js",
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -39,6 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/tasks", TaskController);
+app.use("/auth", UserController);
 
 // Описание API для корневого URL
 /**

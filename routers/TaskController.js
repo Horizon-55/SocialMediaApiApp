@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
  *                  description: Опис поля має тип поля text
  *                completed:
  *                  type: boolean
- *                  escription: Чи завершенно певне завдання!
+ *                  description: Чи завершенно певне завдання!
  *     responses:
  *       201:
  *         description: Task was Created!
