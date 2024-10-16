@@ -1,6 +1,7 @@
 import express from "express";
 import { setupModels } from "../models/User & Task.js";
 import { taskSchema } from "../utils/validationSchemas.js";
+import { authMiddleware } from "../utils/JWTCheck.js";
 
 const router = express.Router();
 const models = await setupModels();
@@ -48,11 +49,14 @@ const models = await setupModels();
  *                  $ref: '#/components/schemas/tasks'
  */
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const GetAllTask = await models.Task.findAll();
-    console.log("Завдання отримано:", GetAllTask);
-    res.json(GetAllTask);
+    const user_id = req.user.id;
+    const AllTaskFromUser = await models.Task.findAll({
+      where: { user_id: user_id },
+    });
+    console.log("Завдання отримано:", AllTaskFromUser);
+    res.json(AllTaskFromUser);
   } catch (error) {
     console.error(error);
     res
@@ -95,9 +99,11 @@ router.get("/", async (req, res) => {
  *         description: Increased characters and Incorect Title!
  */
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
-    let { title, description, user_id } = req.body;
+    let { title, description } = req.body;
+    const user_id = req.user.id;
+
     const { error } = taskSchema.validate({ title, description });
     if (error) {
       return res.status(400).json({
@@ -143,22 +149,32 @@ router.post("/", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const taskId = parseInt(req.params.id);
+    const userId = req.user.id;
+
     if (isNaN(taskId)) {
       return res.status(400).json({ message: "Не валідний ID задачі" });
     }
-    const task = await models.Task.findByPk(taskId);
+
+    const task = await models.Task.findOne({
+      where: {
+        id: taskId,
+        user_id: userId,
+      },
+    });
+
     if (!task) {
       return res.status(404).json({ message: "Задача не знайдена!" });
     }
+
     res.json(task);
   } catch (error) {
     console.error(error);
     res
       .status(500)
-      .json({ message: `Помилка отриманні задачі: ${error.message}` });
+      .json({ message: `Помилка отримання задачі: ${error.message}` });
   }
 });
 /**
@@ -202,14 +218,22 @@ router.get("/:id", async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
+    let { title, description, completed } = req.body;
+    const user_id = req.user.id;
     const taskid = req.params.id;
+
     const task = await models.Task.findByPk(taskid);
     if (!task) {
       return res.status(404).json({ message: "Задача не знайдена!" });
     }
-    const updatedTask = await task.update(req.body);
+    const updatedTask = await task.update({
+      title,
+      description,
+      completed,
+      user_id,
+    });
     res.json({ message: "Задача була оновлена успішно!" });
   } catch (error) {
     console.error(error);
@@ -244,10 +268,16 @@ router.put("/:id", async (req, res) => {
  *       500:
  *         description: Server error!
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
-    const taskId = req.params.id;
-    const task = await models.Task.findByPk(taskId);
+    const taskId = parseInt(req.params.id);
+    const userId = req.user.id;
+    const task = await models.Task.findOne({
+      where: {
+        id: taskId,
+        user_id: userId,
+      },
+    });
     if (!task) {
       return res.status(404).json({ message: "Задачу не знайдено!" });
     }

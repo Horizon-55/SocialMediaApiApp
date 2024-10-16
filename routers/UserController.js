@@ -1,7 +1,8 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import { setupModels } from "../models/User & Task.js";
 import { loginSchema, registerSchema } from "../utils/validationSchemas.js";
-
+import { creatingToken } from "../utils/JWTCheck.js";
 const router = express.Router();
 const models = await setupModels();
 //тут буде опис API для реєстрування користувачів та авторизація!
@@ -71,19 +72,24 @@ router.post("/register", async (req, res) => {
     const existingUser = await models.User.findOne({ where: { email: email } });
     if (existingUser)
       return res.status(400).json({ message: "Такий користувач вже існує!" });
-
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = await models.User.create({
       username,
       email,
-      password,
+      password: hashedPassword,
     });
+    //створення токена JWT
+    const getToken = creatingToken(newUser.id, newUser.email);
     res.status(201).json({
       message: "Користувача успішно зареєстровано!",
       user: {
         id: newUser.id,
         username: newUser.username,
         email: newUser.email,
+        password: hashedPassword,
       },
+      token: getToken,
     });
   } catch (error) {
     console.error("Помилка при реєстрації:", error);
@@ -150,13 +156,11 @@ router.post("/login", async (req, res) => {
     const User = await models.User.findOne({ where: { email: email } });
     if (!User)
       return res.status(401).json({ message: "Невірний email або пароль" });
-    //перевірка пароля поки без захисту! Далі потрібно додати захист bcrypt для встановлення!
-    const CheckPassword = await models.User.findOne({
-      where: { password: password },
-    });
-    if (!CheckPassword)
-      return res.status(401).json({ message: "Невірний email або пароль" });
-    //далі потріна буде генерація токена із JWT для установки!
+    const isMatch = await bcrypt.compare(password, User.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Невірний email або пароль" });
+    //Генерація токена із JWT для установки!
+    const getToken = creatingToken(User.id, User.email);
     res.json({
       message: "Авторизація успішна!",
       user: {
@@ -164,6 +168,7 @@ router.post("/login", async (req, res) => {
         username: User.username,
         email: User.email,
       },
+      token: getToken,
     });
   } catch (error) {
     console.error(error);

@@ -81,6 +81,26 @@ export function setupModels() {
     }
   );
 
+  const SocialNetwork = sequelize.define(
+    "SocialNetwork",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+    },
+    {
+      tableName: "social_networks",
+    }
+  );
+
   // Встановлення асоціацій
   User.hasMany(Task, { foreignKey: "user_id" });
   Task.belongsTo(User, { foreignKey: "user_id" });
@@ -90,5 +110,5 @@ export function setupModels() {
     task.updated_at = new Date();
   });
 
-  return { User, Task };
+  return { User, Task, SocialNetwork };
 }
