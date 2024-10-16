@@ -1,5 +1,5 @@
 import express from "express";
-import { setupModels } from "../models/User & Task.js";
+import { setupModels } from "../models/User and Task and SocialMedia.js";
 import { taskSchema } from "../utils/validationSchemas.js";
 import { authMiddleware } from "../utils/JWTCheck.js";
 
@@ -36,8 +36,8 @@ const models = await setupModels();
  *           description: Посилання із зовнішнього ключа на первинний до таблиці користувача і його Id
  * /tasks:
  *  get:
- *    summary: Get all task
- *    description: This API show the all task from Database!
+ *    summary: Get all task! Only for authorized users!
+ *    description: This API show the all task from Database! Only for authorized users! Protected path!
  *    responses:
  *      200:
  *        description: Successful response.
@@ -68,8 +68,8 @@ router.get("/", authMiddleware, async (req, res) => {
  * @swagger
  * /tasks:
  *   post:
- *     summary: Create a new task
- *     description: Create a new task in the database
+ *     summary: Create a new task! Only for authorized users!
+ *     description: Create a new task in the database! Only for authorized users!
  *     requestBody:
  *       required: true
  *       content:
@@ -128,8 +128,8 @@ router.post("/", authMiddleware, async (req, res) => {
  * @swagger
  * /tasks/{id}:
  *   get:
- *     summary: Get a specific task
- *     description: Retrieve a task by its ID
+ *     summary: Get a specific task Only for authorized users!
+ *     description: Retrieve a task by its ID Only for authorized users!
  *     parameters:
  *       - in: path
  *         name: id
@@ -181,8 +181,8 @@ router.get("/:id", authMiddleware, async (req, res) => {
  * @swagger
  * /tasks/{id}:
  *  put:
- *    summary: Update task by id
- *    description: This API updates task by id
+ *    summary: Update task by id! Only for authorized users!
+ *    description: This API updates task by id! Only for authorized users!
  *    parameters:
  *      - in: path
  *        name: id
@@ -244,8 +244,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
  * @swagger
  * /tasks/{id}:
  *   delete:
- *     summary: Delete task by id
- *     description: This API delete task by id
+ *     summary: Delete task by id! Only for authorized users!
+ *     description: This API delete task by id Only for authorized users!
  *     parameters:
  *       - in: path
  *         name: id

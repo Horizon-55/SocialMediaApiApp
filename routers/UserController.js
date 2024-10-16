@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import { setupModels } from "../models/User & Task.js";
+import { setupModels } from "../models/User and Task and SocialMedia.js";
 import { loginSchema, registerSchema } from "../utils/validationSchemas.js";
 import { creatingToken } from "../utils/JWTCheck.js";
 const router = express.Router();
@@ -25,7 +25,7 @@ const models = await setupModels();
  *        password:
  *          type: string
  *          description: Пароль користувача для авторизації!
- * /register:
+ * /auth/register:
  *   post:
  *    summary: API for registration user
  *    description: This API register User in the DataBase
@@ -101,7 +101,7 @@ router.post("/register", async (req, res) => {
 });
 /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: API Authorization User!
  *     description: This is API Authorization With Login and Password!

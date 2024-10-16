@@ -2,7 +2,7 @@ import express from "express";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { CloseConnection, syndDatabase } from "./connection.js";
-import { setupModels } from "./models/User & Task.js";
+import { setupModels } from "./models/User and Task and SocialMedia.js";
 import TaskController from "./routers/TaskController.js";
 import UserController from "./routers/UserController.js";
 const app = express();
@@ -29,6 +29,20 @@ const options = {
     servers: [
       {
         url: "http://localhost:3000",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
       },
     ],
   },
